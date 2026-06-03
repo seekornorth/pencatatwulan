@@ -1,195 +1,300 @@
 <!DOCTYPE html>
+
 <html lang="id">
+
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <meta charset="UTF-8">
+
+<meta
+name="viewport"
+content="width=device-width, initial-scale=1.0">
 
   <title>Pencatat Uang Wulan 🌸</title>
 
-  <link rel="stylesheet" href="style.css" />
+  <link
+    rel="stylesheet"
+    href="style.css"
+  >
 
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
 </head>
 
 <body>
 
   <div class="container">
+<!-- HEADER -->
 
-    <!-- HEADER -->
-    <header class="header">
-      <div>
-        <h1>🌸 Pencatat Uang Wulan</h1>
-        <p class="subtitle">
-          Catat pemasukan dan pengeluaran harian
-        </p>
-      </div>
-    </header>
+<header class="header">
 
-    <!-- DASHBOARD -->
-    <section class="balance-card">
-      <span>Saldo Saat Ini</span>
-      <h2 id="saldo">Rp 0</h2>
-    </section>
+  <h1>
+    🌸 Pencatat Uang Wulan
+  </h1>
 
-    <section class="stats">
+  <p class="subtitle">
+    Catat pemasukan dan pengeluaran harian
+  </p>
 
-      <div class="card income">
-        <span>Pemasukan</span>
-        <h3 id="totalMasuk">Rp 0</h3>
-      </div>
+</header>
 
-      <div class="card expense">
-        <span>Pengeluaran</span>
-        <h3 id="totalKeluar">Rp 0</h3>
-      </div>
+<!-- DASHBOARD -->
 
-    </section>
+<section class="balance-card">
 
-    <!-- CHART -->
-    <section class="card chart-card">
-      <h3>Ringkasan Keuangan</h3>
+  <span>
+    Saldo Saat Ini
+  </span>
 
-      <canvas id="moneyChart"></canvas>
-    </section>
+  <h2 id="saldo">
+    Rp 0
+  </h2>
 
-    <!-- FILTER TAB -->
-    <section class="tabs">
+</section>
 
-      <button
-        class="tab active"
-        data-filter="all"
-      >
-        Semua
-      </button>
+<!-- STATS -->
 
-      <button
-        class="tab"
-        data-filter="Masuk"
-      >
-        Pemasukan
-      </button>
+<section class="stats">
 
-      <button
-        class="tab"
-        data-filter="Keluar"
-      >
-        Pengeluaran
-      </button>
+  <div class="card income">
 
-    </section>
+    <span>
+      Pemasukan
+    </span>
 
-    <!-- TRANSACTION LIST -->
-    <section class="transaction-section">
+    <h3 id="totalMasuk">
+      Rp 0
+    </h3>
 
-      <h3>Riwayat Transaksi</h3>
+  </div>
 
-      <div id="transactionList">
+  <div class="card expense">
 
-      </div>
+    <span>
+      Pengeluaran
+    </span>
 
-    </section>
+    <h3 id="totalKeluar">
+      Rp 0
+    </h3>
+
+  </div>
+
+</section>
+
+<!-- CHART -->
+
+<section class="card chart-card">
+
+  <h3>
+    📊 Pengeluaran per Kategori
+  </h3>
+
+  <canvas id="moneyChart"></canvas>
+
+</section>
+
+<!-- TOP EXPENSE -->
+
+<section class="card">
+
+  <h3>
+    🔥 Pengeluaran Terbesar
+  </h3>
+
+  <div id="topExpenseList">
+
+  </div>
+
+</section>
+
+<!-- FILTER -->
+
+<section class="tabs">
+
+  <button
+    class="tab active"
+    data-filter="all"
+  >
+    Semua
+  </button>
+
+  <button
+    class="tab"
+    data-filter="Masuk"
+  >
+    Pemasukan
+  </button>
+
+  <button
+    class="tab"
+    data-filter="Keluar"
+  >
+    Pengeluaran
+  </button>
+
+</section>
+
+<!-- RIWAYAT -->
+
+<section class="transaction-section">
+
+  <h3>
+    🧾 Riwayat Transaksi
+  </h3>
+
+  <div id="transactionList">
+
+  </div>
+
+</section>
+```
 
   </div>
 
   <!-- FLOATING BUTTON -->
-  <button id="fab">
-    +
+
+<button
+id="fab"
+aria-label="Tambah transaksi"
+
+>
+
+```
++
+```
+
   </button>
 
   <!-- MODAL -->
-  <div id="modal" class="modal">
 
-    <div class="modal-content">
+  <div
+    id="modal"
+    class="modal"
+  >
 
-      <div class="modal-header">
-        <h3>Tambah Transaksi</h3>
+```
+<div class="modal-content">
 
-        <button id="closeModal">
-          ✕
-        </button>
-      </div>
+  <div class="modal-header">
 
-      <form id="formTransaksi">
+    <h3>
+      Tambah / Edit Transaksi
+    </h3>
 
-        <input
-          type="date"
-          id="tanggal"
-          required
-        />
+    <button
+      type="button"
+      id="closeModal"
+    >
+      ✕
+    </button>
 
-        <select
-          id="jenis"
-          required
-        >
-          <option value="Masuk">
-            Pemasukan
-          </option>
+  </div>
 
-          <option value="Keluar">
-            Pengeluaran
-          </option>
-        </select>
+  <form id="formTransaksi">
 
-        <select
-          id="kategori"
-          required
-        >
-          <option value="Makan">
-            🍜 Makan
-          </option>
+    <!-- ID UNTUK EDIT -->
 
-          <option value="Belanja">
-            🛍️ Belanja
-          </option>
+    <input
+      type="hidden"
+      id="transaksiId"
+    >
 
-          <option value="Transport">
-            🚗 Transport
-          </option>
+    <!-- TANGGAL -->
 
-          <option value="Tagihan">
-            🧾 Tagihan
-          </option>
+    <input
+      type="date"
+      id="tanggal"
+      required
+    >
 
-          <option value="Kesehatan">
-            💊 Kesehatan
-          </option>
+    <!-- JENIS -->
 
-          <option value="Hiburan">
-            🎮 Hiburan
-          </option>
+    <select
+      id="jenis"
+      required
+    >
 
-          <option value="Lainnya">
-            📦 Lainnya
-          </option>
-        </select>
+      <option value="Masuk">
+        💰 Pemasukan
+      </option>
 
-        <input
-          type="number"
-          id="nominal"
-          placeholder="Nominal"
-          required
-        />
+      <option value="Keluar">
+        💸 Pengeluaran
+      </option>
 
-        <textarea
-          id="catatan"
-          placeholder="Catatan..."
-          rows="3"
-        ></textarea>
+    </select>
 
-        <button
-          type="submit"
-          class="save-btn"
-        >
-          Simpan Transaksi
-        </button>
+    <!-- KATEGORI -->
 
-      </form>
+    <select
+      id="kategori"
+      required
+    >
 
-    </div>
+      <option value="Makan">
+        🍜 Makan
+      </option>
 
+      <option value="Belanja">
+        🛍️ Belanja
+      </option>
+
+      <option value="Transport">
+        🚗 Transport
+      </option>
+
+      <option value="Tagihan">
+        🧾 Tagihan
+      </option>
+
+      <option value="Kesehatan">
+        💊 Kesehatan
+      </option>
+
+      <option value="Hiburan">
+        🎮 Hiburan
+      </option>
+
+      <option value="Lainnya">
+        📦 Lainnya
+      </option>
+
+    </select>
+
+    <!-- NOMINAL -->
+
+    <input
+      type="number"
+      id="nominal"
+      placeholder="Nominal"
+      required
+    >
+
+    <!-- CATATAN -->
+
+    <textarea
+      id="catatan"
+      rows="3"
+      placeholder="Catatan..."
+    ></textarea>
+
+    <!-- SUBMIT -->
+
+    <button
+      type="submit"
+      class="save-btn"
+    >
+      Simpan Transaksi
+    </button>
+
+  </form>
+
+</div>
   </div>
 
   <script src="app.js"></script>
 
 </body>
+
 </html>
