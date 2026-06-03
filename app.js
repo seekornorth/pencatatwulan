@@ -15,305 +15,621 @@ let allTransactions = [];
 let currentFilter = "all";
 
 /* =========================
-   MODAL
+MODAL
 ========================= */
 
 fab.addEventListener("click", () => {
-  modal.classList.add("show");
+
+document.getElementById(
+"transaksiId"
+).value = "";
+
+form.reset();
+
+modal.classList.add("show");
 });
 
 closeModal.addEventListener("click", () => {
-  modal.classList.remove("show");
+modal.classList.remove("show");
 });
 
 modal.addEventListener("click", (e) => {
-  if (e.target === modal) {
-    modal.classList.remove("show");
-  }
+
+if (e.target === modal) {
+modal.classList.remove("show");
+}
 });
 
 /* =========================
-   FORMAT RUPIAH
+FORMAT
 ========================= */
 
-function rupiah(number) {
-  return "Rp " + Number(number).toLocaleString("id-ID");
+function rupiah(value) {
+
+return "Rp " +
+Number(value)
+.toLocaleString("id-ID");
 }
 
 /* =========================
-   CHART
+CHART KATEGORI
 ========================= */
 
-function renderChart(masuk, keluar) {
+function renderCategoryChart(data) {
 
-  const saldo = masuk - keluar;
+const expenseData = {};
 
-  const ctx = document
-    .getElementById("moneyChart")
-    .getContext("2d");
+data.forEach(item => {
 
-  if (chart) {
-    chart.destroy();
-  }
+```
+if (item.jenis !== "Keluar")
+  return;
 
-  chart = new Chart(ctx, {
-    type: "doughnut",
+const kategori =
+  item.kategori || "Lainnya";
 
-    data: {
-      labels: [
-        "Pemasukan",
-        "Pengeluaran",
-        "Saldo"
-      ],
+expenseData[kategori] =
+  (expenseData[kategori] || 0)
+  + Number(item.nominal);
+```
 
-      datasets: [{
-        data: [
-          masuk,
-          keluar,
-          saldo > 0 ? saldo : 0
-        ],
+});
 
-        backgroundColor: [
-          "#22c55e",
-          "#ef4444",
-          "#ec4899"
-        ],
+const labels =
+Object.keys(expenseData);
 
-        borderWidth: 0
-      }]
-    },
+const values =
+Object.values(expenseData);
 
-    options: {
-      responsive: true,
+const ctx =
+document
+.getElementById("moneyChart")
+.getContext("2d");
 
-      plugins: {
-        legend: {
-          labels: {
-            color: "#ffffff"
-          }
-        }
+if (chart) {
+chart.destroy();
+}
+
+chart = new Chart(ctx, {
+
+```
+type: "doughnut",
+
+data: {
+
+  labels,
+
+  datasets: [{
+
+    data: values,
+
+    backgroundColor: [
+      "#ec4899",
+      "#22c55e",
+      "#3b82f6",
+      "#f97316",
+      "#a855f7",
+      "#eab308",
+      "#ef4444"
+    ],
+
+    borderWidth: 0
+  }]
+},
+
+options: {
+
+  responsive: true,
+
+  plugins: {
+
+    legend: {
+
+      position: "bottom",
+
+      labels: {
+        color: "#fff"
       }
     }
-  });
+  }
+}
+```
+
+});
 }
 
 /* =========================
-   RENDER TRANSAKSI
+TOP EXPENSES
+========================= */
+
+function renderTopExpenses() {
+
+const summary = {};
+
+allTransactions.forEach(item => {
+
+```
+if (item.jenis !== "Keluar")
+  return;
+
+summary[item.kategori] =
+  (summary[item.kategori] || 0)
+  + Number(item.nominal);
+```
+
+});
+
+const sorted =
+Object.entries(summary)
+.sort((a, b) => b[1] - a[1])
+.slice(0, 5);
+
+const container =
+document.getElementById(
+"topExpenseList"
+);
+
+container.innerHTML = "";
+
+sorted.forEach(item => {
+
+```
+container.innerHTML += `
+
+  <div
+    class="top-expense-item"
+  >
+
+    <span>
+      ${item[0]}
+    </span>
+
+    <strong>
+      ${rupiah(item[1])}
+    </strong>
+
+  </div>
+
+`;
+```
+
+});
+}
+
+/* =========================
+CARD TRANSAKSI
+========================= */
+
+function transactionCard(item) {
+
+const income =
+item.jenis === "Masuk";
+
+return `
+
+```
+<div
+  class="transaction-card"
+>
+
+  <div
+    class="transaction-top"
+  >
+
+    <div>
+
+      <div
+        class="transaction-category"
+      >
+        ${item.kategori}
+      </div>
+
+      <div
+        class="transaction-date"
+      >
+        ${item.tanggal}
+      </div>
+
+    </div>
+
+    <div
+      class="
+        transaction-amount
+        ${income
+          ? "income"
+          : "expense"}
+      "
+    >
+
+      ${income ? "+" : "-"}
+
+      ${rupiah(
+        item.nominal
+      )}
+
+    </div>
+
+  </div>
+
+  <div
+    class="transaction-bottom"
+  >
+
+    <span>
+      ${item.catatan || "-"}
+    </span>
+
+    <div class="actions">
+
+      <button
+        class="edit-btn"
+        onclick="editTransaction('${item.id}')"
+      >
+        ✏️
+      </button>
+
+      <button
+        class="delete-btn"
+        onclick="deleteTransaction('${item.id}')"
+      >
+        🗑️
+      </button>
+
+    </div>
+
+  </div>
+
+</div>
+```
+
+`;
+}
+
+/* =========================
+RENDER TRANSAKSI
 ========================= */
 
 function renderTransactions() {
 
-  transactionList.innerHTML = "";
+transactionList.innerHTML = "";
 
-  let filtered = allTransactions;
+let filtered =
+allTransactions;
 
-  if (currentFilter !== "all") {
-    filtered = allTransactions.filter(
-      item => item.jenis === currentFilter
-    );
-  }
+if (
+currentFilter !== "all"
+) {
 
-  filtered.forEach(item => {
+```
+filtered =
+  allTransactions.filter(
+    item =>
+      item.jenis ===
+      currentFilter
+  );
+```
 
-    const income = item.jenis === "Masuk";
+}
 
-    transactionList.innerHTML += `
-      <div class="transaction-card">
+if (
+filtered.length === 0
+) {
 
-        <div class="transaction-top">
+```
+transactionList.innerHTML =
+  `
+  <div class="card">
+    Belum ada transaksi 🌸
+  </div>
+  `;
 
-          <div class="transaction-category">
-            ${item.kategori}
-          </div>
+return;
+```
 
-          <div class="
-            transaction-amount
-            ${income ? "income" : "expense"}
-          ">
-            ${income ? "+" : "-"}
-            ${rupiah(item.nominal)}
-          </div>
+}
 
-        </div>
+filtered.forEach(item => {
 
-        <div class="transaction-bottom">
+```
+transactionList.innerHTML +=
+  transactionCard(item);
+```
 
-          <span>
-            ${item.tanggal}
-          </span>
-
-          <span>
-            ${item.catatan || "-"}
-          </span>
-
-        </div>
-
-      </div>
-    `;
-  });
-
-  if (filtered.length === 0) {
-
-    transactionList.innerHTML = `
-      <div class="card">
-        Belum ada transaksi 🌸
-      </div>
-    `;
-  }
+});
 }
 
 /* =========================
-   LOAD DATA
+EDIT
+========================= */
+
+window.editTransaction =
+function(id) {
+
+const item =
+allTransactions.find(
+t =>
+String(t.id)
+=== String(id)
+);
+
+if (!item) return;
+
+document.getElementById(
+"transaksiId"
+).value = item.id;
+
+document.getElementById(
+"tanggal"
+).value = item.tanggal;
+
+document.getElementById(
+"jenis"
+).value = item.jenis;
+
+document.getElementById(
+"kategori"
+).value = item.kategori;
+
+document.getElementById(
+"nominal"
+).value = item.nominal;
+
+document.getElementById(
+"catatan"
+).value = item.catatan;
+
+modal.classList.add("show");
+};
+
+/* =========================
+DELETE
+========================= */
+
+window.deleteTransaction =
+async function(id) {
+
+const ok =
+confirm(
+"Hapus transaksi ini?"
+);
+
+if (!ok) return;
+
+try {
+
+```
+await fetch(
+  API_URL,
+  {
+
+    method: "POST",
+
+    body: JSON.stringify({
+
+      action: "delete",
+
+      id: id
+    })
+  }
+);
+
+loadData();
+```
+
+} catch (err) {
+
+```
+console.error(err);
+
+alert(
+  "Gagal menghapus"
+);
+```
+
+}
+};
+
+/* =========================
+LOAD DATA
 ========================= */
 
 async function loadData() {
 
-  try {
+try {
 
-    const res = await fetch(API_URL);
+```
+const res =
+  await fetch(API_URL);
 
-    const data = await res.json();
+const data =
+  await res.json();
 
-    allTransactions = data.reverse();
+allTransactions =
+  data.reverse();
 
-    let totalMasuk = 0;
-    let totalKeluar = 0;
+let totalMasuk = 0;
+let totalKeluar = 0;
 
-    allTransactions.forEach(item => {
+allTransactions.forEach(
+  item => {
 
-      if (item.jenis === "Masuk") {
+    if (
+      item.jenis ===
+      "Masuk"
+    ) {
 
-        totalMasuk += Number(item.nominal);
+      totalMasuk +=
+        Number(
+          item.nominal
+        );
 
-      } else {
+    } else {
 
-        totalKeluar += Number(item.nominal);
-
-      }
-
-    });
-
-    const saldo =
-      totalMasuk - totalKeluar;
-
-    document.getElementById(
-      "totalMasuk"
-    ).textContent = rupiah(totalMasuk);
-
-    document.getElementById(
-      "totalKeluar"
-    ).textContent = rupiah(totalKeluar);
-
-    document.getElementById(
-      "saldo"
-    ).textContent = rupiah(saldo);
-
-    renderChart(
-      totalMasuk,
-      totalKeluar
-    );
-
-    renderTransactions();
-
-  } catch (err) {
-
-    console.error(err);
-
-    transactionList.innerHTML = `
-      <div class="card">
-        Gagal mengambil data 😢
-      </div>
-    `;
+      totalKeluar +=
+        Number(
+          item.nominal
+        );
+    }
   }
+);
+
+document.getElementById(
+  "totalMasuk"
+).textContent =
+  rupiah(totalMasuk);
+
+document.getElementById(
+  "totalKeluar"
+).textContent =
+  rupiah(totalKeluar);
+
+document.getElementById(
+  "saldo"
+).textContent =
+  rupiah(
+    totalMasuk -
+    totalKeluar
+  );
+
+renderCategoryChart(
+  allTransactions
+);
+
+renderTopExpenses();
+
+renderTransactions();
+```
+
+} catch (err) {
+
+```
+console.error(err);
+```
+
+}
 }
 
 /* =========================
-   FILTER TAB
+FILTER TAB
 ========================= */
 
 tabs.forEach(tab => {
 
-  tab.addEventListener("click", () => {
+tab.addEventListener(
+"click",
+() => {
 
-    tabs.forEach(t =>
-      t.classList.remove("active")
-    );
+```
+  tabs.forEach(
+    t =>
+      t.classList.remove(
+        "active"
+      )
+  );
 
-    tab.classList.add("active");
+  tab.classList.add(
+    "active"
+  );
 
-    currentFilter =
-      tab.dataset.filter;
+  currentFilter =
+    tab.dataset.filter;
 
-    renderTransactions();
-  });
+  renderTransactions();
+}
+```
+
+);
 });
 
 /* =========================
-   SIMPAN TRANSAKSI
+SUBMIT
 ========================= */
 
 form.addEventListener(
-  "submit",
-  async (e) => {
+"submit",
+async (e) => {
 
-    e.preventDefault();
+```
+e.preventDefault();
 
-    const payload = {
+const id =
+  document.getElementById(
+    "transaksiId"
+  ).value;
 
-      tanggal:
-        document.getElementById(
-          "tanggal"
-        ).value,
+const payload = {
 
-      jenis:
-        document.getElementById(
-          "jenis"
-        ).value,
+  action:
+    id
+      ? "update"
+      : "create",
 
-      kategori:
-        document.getElementById(
-          "kategori"
-        ).value,
+  id: id,
 
-      nominal:
-        document.getElementById(
-          "nominal"
-        ).value,
+  tanggal:
+    document.getElementById(
+      "tanggal"
+    ).value,
 
-      catatan:
-        document.getElementById(
-          "catatan"
-        ).value
-    };
+  jenis:
+    document.getElementById(
+      "jenis"
+    ).value,
 
-    try {
+  kategori:
+    document.getElementById(
+      "kategori"
+    ).value,
 
-      await fetch(API_URL, {
+  nominal:
+    document.getElementById(
+      "nominal"
+    ).value,
 
-        method: "POST",
+  catatan:
+    document.getElementById(
+      "catatan"
+    ).value
+};
 
-        body: JSON.stringify(
+try {
+
+  await fetch(
+    API_URL,
+    {
+
+      method: "POST",
+
+      body:
+        JSON.stringify(
           payload
         )
-      });
-
-      form.reset();
-
-      modal.classList.remove(
-        "show"
-      );
-
-      loadData();
-
-    } catch (err) {
-
-      alert(
-        "Gagal menyimpan data"
-      );
-
-      console.error(err);
     }
-  }
+  );
+
+  form.reset();
+
+  document.getElementById(
+    "transaksiId"
+  ).value = "";
+
+  modal.classList.remove(
+    "show"
+  );
+
+  loadData();
+
+} catch (err) {
+
+  console.error(err);
+
+  alert(
+    "Gagal menyimpan"
+  );
+}
+```
+
+}
 );
 
 loadData();
