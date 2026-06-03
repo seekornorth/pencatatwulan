@@ -1,5 +1,5 @@
 const API_URL =
-"https://script.google.com/macros/s/AKfycbxmyQFd9TKL92oEKpSoQCsJJhjKQP1mh4HVYuAB2FntYVilMMgm_IBo9ibkTFO_jrW8/exec";
+"https://script.google.com/macros/s/AKfycbzR8tcylwRF0pDhWWBSRa56Y50kj2xDRxatqfbIN7Lq8CjlBA6jJmNbyugLN1x4CBP_/exec";
 
 const form = document.getElementById("formTransaksi");
 const transactionList = document.getElementById("transactionList");
