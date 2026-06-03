@@ -61,7 +61,7 @@ const expenseData = {};
 
 data.forEach(item => {
 
-```
+
 if (item.jenis !== "Keluar")
   return;
 
@@ -71,7 +71,7 @@ const kategori =
 expenseData[kategori] =
   (expenseData[kategori] || 0)
   + Number(item.nominal);
-```
+
 
 });
 
@@ -92,7 +92,7 @@ chart.destroy();
 
 chart = new Chart(ctx, {
 
-```
+
 type: "doughnut",
 
 data: {
@@ -133,7 +133,7 @@ options: {
     }
   }
 }
-```
+
 
 });
 }
@@ -148,14 +148,14 @@ const summary = {};
 
 allTransactions.forEach(item => {
 
-```
+
 if (item.jenis !== "Keluar")
   return;
 
 summary[item.kategori] =
   (summary[item.kategori] || 0)
   + Number(item.nominal);
-```
+
 
 });
 
@@ -173,7 +173,7 @@ container.innerHTML = "";
 
 sorted.forEach(item => {
 
-```
+
 container.innerHTML += `
 
   <div
@@ -191,7 +191,7 @@ container.innerHTML += `
   </div>
 
 `;
-```
+
 
 });
 }
@@ -207,7 +207,7 @@ item.jenis === "Masuk";
 
 return `
 
-```
+
 <div
   class="transaction-card"
 >
@@ -280,7 +280,7 @@ return `
   </div>
 
 </div>
-```
+
 
 `;
 }
@@ -300,14 +300,14 @@ if (
 currentFilter !== "all"
 ) {
 
-```
+
 filtered =
   allTransactions.filter(
     item =>
       item.jenis ===
       currentFilter
   );
-```
+
 
 }
 
@@ -315,7 +315,7 @@ if (
 filtered.length === 0
 ) {
 
-```
+
 transactionList.innerHTML =
   `
   <div class="card">
@@ -324,16 +324,16 @@ transactionList.innerHTML =
   `;
 
 return;
-```
+
 
 }
 
 filtered.forEach(item => {
 
-```
+
 transactionList.innerHTML +=
   transactionCard(item);
-```
+
 
 });
 }
@@ -397,7 +397,7 @@ if (!ok) return;
 
 try {
 
-```
+
 await fetch(
   API_URL,
   {
@@ -414,17 +414,17 @@ await fetch(
 );
 
 loadData();
-```
+
 
 } catch (err) {
 
-```
+
 console.error(err);
 
 alert(
   "Gagal menghapus"
 );
-```
+
 
 }
 };
@@ -437,7 +437,7 @@ async function loadData() {
 
 try {
 
-```
+
 const res =
   await fetch(API_URL);
 
@@ -498,13 +498,13 @@ renderCategoryChart(
 renderTopExpenses();
 
 renderTransactions();
-```
+
 
 } catch (err) {
 
-```
+
 console.error(err);
-```
+
 
 }
 }
@@ -519,7 +519,7 @@ tab.addEventListener(
 "click",
 () => {
 
-```
+
   tabs.forEach(
     t =>
       t.classList.remove(
@@ -536,7 +536,7 @@ tab.addEventListener(
 
   renderTransactions();
 }
-```
+
 
 );
 });
@@ -549,7 +549,7 @@ form.addEventListener(
 "submit",
 async (e) => {
 
-```
+
 e.preventDefault();
 
 const id =
@@ -627,7 +627,7 @@ try {
     "Gagal menyimpan"
   );
 }
-```
+
 
 }
 );
