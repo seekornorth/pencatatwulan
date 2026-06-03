@@ -202,8 +202,10 @@ CARD TRANSAKSI
 
 function transactionCard(item) {
 
-const income =
-item.jenis === "Masuk";
+  console.log("ITEM =", item);
+
+  const income =
+    item.jenis === "Masuk";
 
 return `
 
@@ -388,28 +390,29 @@ DELETE
 window.deleteTransaction =
 async function(id) {
 
-const ok =
-confirm(
-"Hapus transaksi ini?"
-);
+  console.log("DELETE ID =", id);
 
+  const ok =
+  confirm(
+    "Hapus transaksi ini?"
+  );
 if (!ok) return;
 
 try {
 
 
+const payload = {
+  action: "delete",
+  id: id
+};
+
+console.log("DELETE PAYLOAD =", payload);
+
 await fetch(
   API_URL,
   {
-
     method: "POST",
-
-    body: JSON.stringify({
-
-      action: "delete",
-
-      id: id
-    })
+    body: JSON.stringify(payload)
   }
 );
 
